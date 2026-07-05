@@ -5,23 +5,27 @@ langchain4j:
     chat-model:
       base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
       api-key: ${API-KEY}
-      model-name: tongyi-xiaomi-analysis-pro
+      model-name: qwen3.7-max-2026-05-17
       log-requests: true
       log-responses: true
 #      流式输出
     streaming-chat-model:
       base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
       api-key: ${API-KEY}
-      model-name: tongyi-xiaomi-analysis-pro
+      model-name: qwen3.7-max-2026-05-17
       log-requests: true
       log-responses: true
-#      向量模型
-#    embedding-model:
-#      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
-#      api-key: ${API-KEY}
-#      model-name: tongyi-embedding-vision-flash-2026-03-06
-#      log-requests: true
-#      log-responses: true
+#      向量模型（采用ollama私有的向量模型）
+  ollama:
+    embedding-model:
+      base-url: http://192.168.0.128:11434
+      model-name: bge-m3
+      log-requests: true
+      log-responses: true
+  community:
+    redis:
+      host: 192.168.0.128
+      port: 6379
 logging:
   level:
     dev.langchain4j: debug
@@ -29,5 +33,5 @@ logging:
 spring:
   data:
     redis:
-      host: localhost
+      host: 192.168.0.128
       port: 6379

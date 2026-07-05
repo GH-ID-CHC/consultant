@@ -23,6 +23,6 @@ public interface ConsultantService {
      * @param message 消息
      * @return {@link String }
      */
-    @SystemMessage(fromResource = "system.txt")
+//    @SystemMessage(fromResource = "system.txt")
     public Flux<String> chat(@MemoryId String memoryId, @UserMessage String message);
 }

@@ -1,6 +1,7 @@
 package com.example.consultant.config;
 
 import com.example.consultant.aiservice.RedisChatMemoryStore;
+import dev.langchain4j.community.store.embedding.redis.RedisEmbeddingStore;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentSplitter;
 import dev.langchain4j.data.document.loader.ClassPathDocumentLoader;
@@ -15,8 +16,6 @@ import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
-import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
-import dev.langchain4j.store.memory.chat.InMemoryChatMemoryStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +39,9 @@ public class CommonConfig {
 
     @Autowired
     private RedisChatMemoryStore  chatMemoryStore;
+
+    @Autowired
+    private RedisEmbeddingStore redisEmbeddingStore;
 
     /*@Bean
     public ConsultantService consultantService(){
@@ -93,33 +95,32 @@ public class CommonConfig {
     public EmbeddingStore embeddingStore() {
         // 1. 加载文档进内存
         List<Document> documents = ClassPathDocumentLoader.loadDocuments("content",new ApachePdfBoxDocumentParser());
-        // 2. 构建向量数据库对象
-        InMemoryEmbeddingStore inMemoryChatMemoryStore = new InMemoryEmbeddingStore<>();
+        // 2. 构建向量数据库对象 这里是内存向量数据库使用redisEmbeddingStore进行替换
+//        InMemoryEmbeddingStore inMemoryChatMemoryStore = new InMemoryEmbeddingStore<>();
         // 文档分割器
         DocumentSplitter recursive = DocumentSplitters.recursive(500, 100);
         // 3. 完成文本的切割，向量化，存储
         EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor
                 .builder()
-                .embeddingStore(inMemoryChatMemoryStore)
+                .embeddingStore(redisEmbeddingStore)
                 .documentSplitter(recursive)
-//                .embeddingModel(embeddingModel)
+                .embeddingModel(embeddingModel)
                 .build();
         ingestor.ingest(documents);
-        return inMemoryChatMemoryStore;
+        return redisEmbeddingStore;
 
     }
 
     /**
      * 构建向量数据库检索对象
      *
-     * @param store 向量数据库
      * @return {@link ContentRetriever }
      */
     @Bean
-    public ContentRetriever contentRetriever(EmbeddingStore store){
+    public ContentRetriever contentRetriever(){
         return EmbeddingStoreContentRetriever.builder()
-                .embeddingStore(store)
-//                .embeddingModel(embeddingModel)
+                .embeddingStore(redisEmbeddingStore)
+                .embeddingModel(embeddingModel)
                 .minScore(0.5)
                 .maxResults(3)
                 .build();
