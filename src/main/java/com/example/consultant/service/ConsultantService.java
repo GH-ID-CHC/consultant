@@ -1,4 +1,4 @@
-package com.example.consultant.serivce;
+package com.example.consultant.service;
 
 import dev.langchain4j.service.MemoryId;
 import dev.langchain4j.service.SystemMessage;
@@ -11,10 +11,10 @@ import reactor.core.publisher.Flux;
         wiringMode = AiServiceWiringMode.EXPLICIT,  //手动配置
         chatModel = "openAiChatModel",  //指定模型
         streamingChatModel = "openAiStreamingChatModel",  //流式配置
-//        chatMemory = "chatMemory",  //配置会话记忆对象
+        chatMemory = "chatMemory",  //配置会话记忆对象
         chatMemoryProvider = "chatMemoryProvider",   //配置会话隔离对象
-        contentRetriever = "contentRetriever"   //配置向量数据库检索对象
-        
+        contentRetriever = "contentRetriever",   //配置向量数据库检索对象
+        tools = "reservationTool"       //调用工具
 ) 
 public interface ConsultantService {
     /**
@@ -23,6 +23,6 @@ public interface ConsultantService {
      * @param message 消息
      * @return {@link String }
      */
-//    @SystemMessage(fromResource = "system.txt")
+    @SystemMessage(fromResource = "system.txt")
     public Flux<String> chat(@MemoryId String memoryId, @UserMessage String message);
 }
